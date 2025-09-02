@@ -9,26 +9,46 @@
 
 </head>
 <body>
-  <div class="container">
-    <h1 id="greeting">Welcome!</h1>
-    <div id="clock">--:--</div>
-    <div id="weather-widget">
-      <h2>Chicago Weather</h2>
-      <div id="current-weather">Loading current weather...</div>
-      <div id="forecast">
-        <h3>5-Day Forecast</h3>
-        <div id="forecast-cards" class="forecast-grid"></div>
+  <div class="dashboard-grid">
+    
+    <!-- HEADER (Centered Across All Columns) -->
+    <div class="header">
+      <h1 id="greeting">Good Morning</h1>
+      <h2 id="clock">12:34 PM</h2>
+    </div>
+
+    <!-- LEFT COLUMN: Forecast -->
+    <div class="forecast-sidebar">
+      <h2>5-Day Forecast</h2>
+      <div id="forecast-cards"></div>
+    </div>
+
+    <!-- CENTER COLUMN: Weather (top) + Photo (bottom) -->
+    <div class="center-column">
+      <div class="current-weather">
+        <h2>Today's Weather</h2>
+        <div id="current-weather"></div>
+      </div>
+      <div class="photo-box">
+        <img src="photos/carousel/frog.jpg" alt="Dashboard Photo" class="static-photo">
       </div>
     </div>
-    <div id="news">
-      <h2>Top News</h2>
-      <ul id="news-list"><li>Loading...</li></ul>
-    </div>
-<!--     <div id="photo-carousel">
-      <img id="carousel-img" src="photos/img1.jpg" alt="Photo">
-    </div> -->
-  </div>
 
+    <!-- RIGHT COLUMN: News -->
+    <div class="news-section" id="news-section">
+      <div id="news" class="news-source-section">
+        <h2>News</h2>
+        <div id="nyt-news-container"></div>
+      </div>
+      <div id="gnn-news" class="news-source-section">
+        <h2>Good News Network</h2>
+        <div id="goodnews-container"></div>
+      </div>
+    </div>
+
+
+  </div>
   <script src="script.js"></script>
 </body>
+
 </html>

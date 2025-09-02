@@ -50,9 +50,12 @@ function getWeather() {
       const forecastContainer = document.getElementById("forecast-cards");
       forecastContainer.innerHTML = "";
 
+      // Force day names starting from today
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const todayIndex = new Date().getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+
       for (let i = 0; i < 5; i++) {
-        const day = new Date(data.daily.time[i]);
-        const dayName = day.toLocaleDateString("en-US", { weekday: "short" });
+        const dayName = dayNames[(todayIndex + i) % 7];
         const min = data.daily.temperature_2m_min[i];
         const max = data.daily.temperature_2m_max[i];
         const dayCode = data.daily.weathercode[i];
@@ -66,8 +69,13 @@ function getWeather() {
         `;
         forecastContainer.appendChild(card);
       }
+    })
+    .catch(err => {
+      console.error("Weather fetch failed:", err);
+      document.getElementById("current-weather").innerHTML = "<p>Unable to load weather data.</p>";
     });
 }
+
 
 function getWeatherDescription(code) {
   const descriptions = {
@@ -119,18 +127,89 @@ function formatTime(isoString) {
 getWeather();
 setInterval(getWeather, 60 * 60 * 1000); // Update every hour
 
-// NEWS (NYT RSS via rss2json)
+// ===== NEWS (NYT RSS via rss2json API) =====
 fetch("https://api.rss2json.com/v1/api.json?rss_url=https://rss.nytimes.com/services/xml/rss/nyt/US.xml")
-  .then(res => res.json())
+  .then(res => {
+    if (!res.ok) throw new Error(`API responded with status ${res.status}`);
+    return res.json();
+  })
   .then(data => {
-    const list = document.getElementById('news-list');
-    list.innerHTML = '';
-    data.items.slice(0, 5).forEach(item => {
-      const li = document.createElement('li');
-      li.innerHTML = `<a href="${item.link}" target="_blank" style="color:#6cf">${item.title}</a>`;
-      list.appendChild(li);
+    const container = document.getElementById("nyt-news-container");
+    container.innerHTML = "";
+
+    if (!data.items || !Array.isArray(data.items)) {
+      throw new Error("No news items found in API response");
+    }
+
+    data.items.slice(0, 3).forEach(item => {
+      let thumb = item.thumbnail || extractImageFromContent(item.content);
+      if (!thumb) {
+        thumb = "https://via.placeholder.com/80?text=News";
+      }
+
+      const card = document.createElement("div");
+      card.className = "news-card";
+      card.innerHTML = `
+        <img src="${thumb}" alt="News image" class="news-thumb" onerror="this.style.display='none'"/>
+        <div class="news-content">
+          <h3>${item.title}</h3>
+          <p class="news-source">${item.author || "NY Times"}</p>
+        </div>`;
+      container.appendChild(card);
     });
+  })
+  .catch(err => {
+    console.error("NYT fetch failed:", err);
+    document.getElementById("nyt-news-container").innerHTML = `<p>Sorry, NYT news is unavailable right now.</p>`;
   });
+
+// ===== NEWS (Good News Network RSS via rss2json API) =====
+fetch("https://api.rss2json.com/v1/api.json?rss_url=https://www.goodnewsnetwork.org/feed/")
+  .then(res => {
+    if (!res.ok) throw new Error(`API responded with status ${res.status}`);
+    return res.json();
+  })
+  .then(data => {
+    const container = document.getElementById("goodnews-container");
+    container.innerHTML = "";
+
+    if (!data.items || !Array.isArray(data.items)) {
+      throw new Error("No news items found in API response");
+    }
+
+    data.items.slice(0, 3).forEach(item => {
+      let thumb = item.thumbnail || extractImageFromContent(item.content);
+      if (!thumb) {
+        thumb = "https://via.placeholder.com/80?text=News";
+      }
+
+      const card = document.createElement("div");
+      card.className = "news-card";
+      card.innerHTML = `
+        <img src="${thumb}" alt="News image" class="news-thumb" onerror="this.style.display='none'"/>
+        <div class="news-content">
+          <h3>${item.title}</h3>
+          <p class="news-source">${item.author || "Good News Network"}</p>
+        </div>`;
+      container.appendChild(card);
+    });
+  })
+  .catch(err => {
+    console.error("Good News fetch failed:", err);
+    document.getElementById("goodnews-container").innerHTML = `<p>Sorry, Good News is unavailable right now.</p>`;
+  });
+
+// Helper function to extract image URL from HTML content
+function extractImageFromContent(html) {
+  const match = html.match(/<img[^>]+src="([^">]+)"/);
+  return match ? match[1] : null;
+}
+
+
+
+
+
+
 
 // // PHOTO CAROUSEL
 // const photos = ['photos/img1.jpg', 'photos/img2.jpg', 'photos/img3.jpg'];
