@@ -2,14 +2,14 @@
 function setGreeting() {
   const now = new Date();
   const hour = now.getHours();
-  let greeting = "Welcome Anuja!";
+  let greeting = "Welcome Kale and Arugula!";
 
   if (hour >= 5 && hour < 12) {
-    greeting = "☀️ Good morning, Anuja!";
+    greeting = "☀️ Good morning, Kale and Arugula!";
   } else if (hour >= 12 && hour < 17) {
-    greeting = "🌤 Good afternoon, Anuja!";
+    greeting = "🌤 Good afternoon, Kale and Arugula!";
   } else {
-    greeting = "🌙 Good evening, Anuja!";
+    greeting = "🌙 Good evening, Kale and Arugula!";
   }
 
   document.getElementById("greeting").textContent = greeting;
@@ -125,7 +125,7 @@ function formatTime(isoString) {
 }
 
 getWeather();
-setInterval(getWeather, 60 * 60 * 1000); // Update every hour
+setInterval(getWeather, 900000); // Update 15 minute
 
 // ===== NEWS (NYT RSS via rss2json API) =====
 fetch("https://api.rss2json.com/v1/api.json?rss_url=https://rss.nytimes.com/services/xml/rss/nyt/US.xml")
@@ -204,9 +204,6 @@ function extractImageFromContent(html) {
   const match = html.match(/<img[^>]+src="([^">]+)"/);
   return match ? match[1] : null;
 }
-
-
-
 
 
 
